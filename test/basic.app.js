@@ -10,12 +10,14 @@ var serveStatic = require('serve-static')
 var bodyParser  = require('body-parser')
 
 var seneca = require('seneca')()
+seneca.use('entity')
+seneca.use('web')
 seneca.use( require('..') )
 
 
 
 var app = connect()
-
+app.use(require('connect-query')())
 app.use( serveStatic('./public') )
 app.use( bodyParser.json() )
 app.use( seneca.export('web') )

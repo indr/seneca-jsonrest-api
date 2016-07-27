@@ -20,17 +20,19 @@
   "author": "Richard Rodger (@rjrodger)",
   "license": "MIT",
   "devDependencies": {
-    "body-parser": "~1.11.0",
-    "connect": "~3.3.4",
-    "docco": "~0.6.3",
+    "body-parser": "~1.15.2",
+    "connect": "~3.4.1",
+    "connect-query": "^0.2.0",
+    "docco": "~0.7.0",
     "gex": "~0.2.0",
-    "jshint": "~2.6.0",
-    "mocha": "~2.1.0",
-    "seneca": "plugin",
-    "serve-static": "~1.8.1"
+    "jshint": "~2.9.2",
+    "mocha": "~2.5.3",
+    "seneca": "2.1.0",
+    "seneca-entity": "^1.2.0",
+    "serve-static": "~1.11.1"
   },
   "dependencies": {
-    "lodash": "~2.4.1"
+    "lodash": "~4.14.0"
   },
   "files": [
     "README.md",
