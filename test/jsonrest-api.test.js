@@ -18,18 +18,14 @@ var jsonrest_api = require('..')
 
 
 var seneca = require('seneca')()
-
+seneca.use('web')
+seneca.use('entity')
 
 seneca.use( require('..') )
 seneca.use( require('..'), {tag$:'aspects', aspect:true, prefix:'/aspects/rest'})
 seneca.use( require('..'), {tag$:'injects', aspect:true, prefix:'/inject/rest'})
 seneca.use( require('..'), {tag$:'access', aspect:'user-access', prefix:'/access/rest'})
 
-
-var jsonrestapi = seneca.pin({role:'jsonrest-api',prefix:'/api/rest',method:'*'})
-var jsonrestapi_aspects = seneca.pin({role:'jsonrest-api',prefix:'/aspects/rest',method:'*'})
-var jsonrestapi_inject = seneca.pin({role:'jsonrest-api',prefix:'/inject/rest',method:'*'})
-var jsonrestapi_access = seneca.pin({role:'jsonrest-api',prefix:'/access/rest',method:'*'})
 
 
 seneca.add({role:'jsonrest-api',prefix:'/inject/rest',aspect:'save',advice:'before'},function(args,done){
@@ -59,14 +55,25 @@ function squish(obj) { return util.inspect(obj).replace(/\s+/g,'') }
 
 
 describe('jsonrest-api', function() {
-  
+  var jsonrestapi, jsonrestapi_aspects, jsonrestapi_inject;
+
+  before(function (done) {
+    seneca.ready(function () {
+
+      jsonrestapi = seneca.pin({role: 'jsonrest-api', prefix: '/api/rest', method: '*'})
+      jsonrestapi_aspects = seneca.pin({role: 'jsonrest-api', prefix: '/aspects/rest', method: '*'})
+      jsonrestapi_inject = seneca.pin({role: 'jsonrest-api', prefix: '/inject/rest', method: '*'})
+
+      done();
+    })
+  })
+
   it('version', function() {
     assert.ok(gex(seneca.version),'0.5.*')
   })
 
 
-  function do_methods(pin,entname,vals) {
-    return function() {
+  function do_methods(done,pin,entname,vals) {
       ;pin.post({name:entname,data:{a:1}},function(err,saved){
         assert.ok(null==err)
         assert.ok(saved.id)
@@ -100,13 +107,18 @@ describe('jsonrest-api', function() {
         //console.dir(list)
         assert.ok(null==err)
         assert.equal(0,list.length)
-
+        done()
       }) }) }) }) })
-    }
   }
 
 
-  it('happy', do_methods(jsonrestapi,'foo'))
-  it('aspect_defaults', do_methods(jsonrestapi_aspects,'bar'))
-  it('aspect_inject', do_methods(jsonrestapi_inject,'zoo',[2,3,4]))  
+  it('happy', function (done) {
+    do_methods(done, jsonrestapi, 'foo')
+  })
+  it('aspect_defaults', function (done) {
+    do_methods(done, jsonrestapi_aspects, 'bar')
+  })
+  it('aspect_inject', function (done) {
+    do_methods(done, jsonrestapi_inject, 'zoo', [2, 3, 4])
+  })
 })
